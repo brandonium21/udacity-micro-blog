@@ -1,0 +1,107 @@
+{% extends 'base.html' %} {% block body %}
+<div class="container">
+    <div class="container">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/allpost">
+                        Lé Blog
+                    </a>
+                </div>
+                <!-- login scheme -->
+                {% if logout %}
+                <a class="btn btn-default navbar-btn navbar-right" href="{{logout}}" role="button">
+                    Logout
+                </a>
+                <p class="navbar-text navbar-right">{{user}}</p>
+                {% else %}
+                <a class="btn btn-default navbar-btn navbar-right" href="{{login}}" role="button">
+                    Login
+                </a> {% endif %}
+            </div>
+        </nav>
+        <hr>
+        <p class="lead">
+            Welcome To my blog please post to your hearts content. But, before that please create an account or login. Or just take a look around.
+        </p>
+    </div>
+    <div class="posts container">
+        {% if posts %}
+        <ul class="list-group">
+            {% for post in posts|sort(attribute='updated_on', reverse=True) %}
+            <li class="list-group-item clearfix">
+                <div class="post-info">
+                    <b>{{ post.title }}</b>
+                    <br>{{ post.author }}
+                    <br>
+                    <small><i>{{ post.updated_on }}</i></small>
+                    <div class="container-fluid">
+                        <blockquote>
+                            <p class="lead">{{ post.content }}</p>
+                        </blockquote>
+                    </div>
+                </div>
+                {% if post.author == user %}
+                <span class="pull-right">
+                    <a class="btn btn-xs btn-warning" data-toggle="modal" data-target=".edit-modal" data-title="{{post.title}}" data-content="{{post.content}}" data-post="{{post.key.id()}}">
+                        Edit 
+                    </a>
+                    <a href="/deletePost/{{ post.key.id() }}" class="btn btn-xs btn-danger">
+                        Delete 
+                    </a>
+                </span> {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <h2>No Post Yet</h2> {% endif %}
+    </div>
+</div>
+{% if user %}
+<footer class="footer">
+    <div class="container">
+        <form class="form-inline" action="/addpost" method="POST">
+            <div class="form-group">
+                <input type="text" class="form-control" name="title" placeholder="Title">
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" name="content" rows="1" id="input-post" placeholder="Care to add?" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-default">Post</button>
+        </form>
+    </div>
+</footer>
+{% endif %}
+<!-- edit modal-->
+<div class="edit-modal modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit Post</h4>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/editPost">
+                    <div class="form-group">
+                        <label for="title-edit" class="control-label">Title:</label>
+                        <input type="text" name="title" class="form-control" id="title-edit">
+                        <input type="hidden" name="post_id" id="post-id">
+                    </div>
+                    <div class="form-group">
+                        <label for="content-edit" class="control-label">Content:</label>
+                        <textarea class="form-control" name="content" id="content-edit"></textarea>
+                    </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+{% endblock %}

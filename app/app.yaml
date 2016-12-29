@@ -1,0 +1,16 @@
+runtime: python
+api_version: 1
+threadsafe: yes
+
+runtime_config:
+  python_version: 3
+
+handlers:
+- url: /css
+  static_dir: css
+- url: .*
+  script: main.app
+- url: /addpost
+  script: user_profile.app
+  login: required
+  auth_fail_action: unauthorized
