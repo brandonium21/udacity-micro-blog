@@ -21,7 +21,7 @@ def show_allpost():
     user = users.get_current_user()
     posts = Post.query()
     if users.get_current_user():
-        logout = users.create_logout_url(request.url)
+        logout = users.create_logout_url(users.create_login_url(request.url))
     else:
         login = users.create_login_url(request.url)
 
@@ -37,19 +37,24 @@ def edit_post():
         post_id = request.form['post_id']
         content = request.form['content']
         post = ndb.Key(Post, int(post_id)).get()
-        post.title = title
-        post.content = content
-        post.updated_on = datetime.datetime.now()
-        post.put()
-        time.sleep(.2)
-        return redirect(url_for("show_allpost"))
+        if post.author == users.get_current_user():
+            post.title = title
+            post.content = content
+            post.updated_on = datetime.datetime.now()
+            post.put()
+            time.sleep(.2)
+            return redirect(url_for("show_allpost"))
+        return render_template('unauthorized.html')
 
 @app.route('/deletePost/<post_key>', methods=['GET','POST'])
 def del_post(post_key):
     """Return a friendly HTTP greeting."""
-    del_post = ndb.Key(Post, int(post_key)).delete()
-    time.sleep(.2)
-    return redirect(url_for("show_allpost"))
+    del_post = ndb.Key(Post, int(post_key))
+    if post.author == users.get_current_user():
+        del_post.delete()
+        time.sleep(.2)
+        return redirect(url_for("show_allpost"))
+    return render_template('unauthorized.html')
 
 
 @app.route('/addpost', methods=['GET', 'POST'])
