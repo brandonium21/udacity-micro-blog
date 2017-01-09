@@ -53,3 +53,12 @@ body {
     margin-bottom: auto;
     margin-top: auto;
 }
+
+.edit-cmt-form{
+    margin-bottom: 10px;
+}
+.like-btn,
+.like-count{
+    text-align: center;
+    margin-bottom: 0;
+}
